@@ -15,7 +15,7 @@ class ToDoController
 {
     public function index(Request $request)
     {
-        return Task::paginate(10);
+        return Task::all();
     }
 
     public function show(int $id)
@@ -34,9 +34,7 @@ class ToDoController
 
     public function create(Request $request)
     {
-        $loader = new FileLoader(new Filesystem, 'lang');
-        $translator = new Translator($loader, 'en');
-        $validation = new Factory($translator, new Container);
+        $validation = app('validation');
 
         $rules = [
             'description' => 'required',
@@ -54,10 +52,13 @@ class ToDoController
             return $validator->errors();
         }
 
+        $user = $_SESSION['user'];
+
         try {
             Task::create([
                 'description' => $request->input('description'),
                 'is_done' => $request->input('is_done'),
+                'user_id' => $user->id,
             ]);
         } catch (\Throwable $e) {
             return new Response([
@@ -72,15 +73,12 @@ class ToDoController
 
     public function update(Request $request, int $id)
     {
-        $loader = new FileLoader(new Filesystem, 'lang');
-        $translator = new Translator($loader, 'en');
-        $validation = new Factory($translator, new Container);
+        $validation = app('validation');
 
         $rules = [
             'description' => 'required',
             'is_done' => 'required|boolean',
         ];
-
         $messages = [
             'required' => 'The :attribute field is required.',
             'boolean' => 'The :attribute field is not boolean.'

@@ -24,6 +24,7 @@ $router->group(['middleware' => 'auth'], function (Router $router) {
         $router->post('/todos', ['name' => 'todo.create', 'uses' => 'ToDoController@create']);
         $router->patch('/todos/{todo}', ['name' => 'todo.update', 'uses' => 'ToDoController@update']);
         $router->delete('/todos/{todo}', ['name' => 'todo.delete', 'uses' => 'ToDoController@destroy']);
+        $router->get('/logout', ['name' => 'user.logout', 'uses' => 'AuthController@logout']);
     });
 });
 

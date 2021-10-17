@@ -16,10 +16,8 @@ class AuthController
 {
     public function login(Request $request)
     {
-        $loader = new FileLoader(new Filesystem, 'lang');
-        $translator = new Translator($loader, 'en');
-        $validation = new Factory($translator, new Container);
-
+        $validation = app('validation');
+        $hash = app('hash');
         $rules = [
             'email' => 'required|email',
             'password' => 'required',
@@ -37,8 +35,6 @@ class AuthController
         }
 
         $user = User::where('email', $request->email)->first();
-        $container = Container::getInstance();
-        $hash = $container->make('hash');
 
         if (! $user || ! $hash->check($request->password, $user->password)) {
             throw ValidationException::withMessages([
@@ -49,5 +45,12 @@ class AuthController
         $_SESSION['user'] = $user;
 
         return $user;
+    }
+
+    public function logout()
+    {
+        unset($_SESSION['user']);
+
+
     }
 }

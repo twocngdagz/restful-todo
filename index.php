@@ -18,33 +18,24 @@ use Illuminate\Config\Repository;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Hashing\HashManager;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Router;
-
+use Illuminate\Translation\FileLoader;
+use Illuminate\Translation\Translator;
+use Illuminate\Validation\Factory;
+$configPath = __DIR__ . '/config/';
 
 $capsule = new Manager;
 
-$capsule->addConnection([
-    'driver' => 'mysql',
-    'host' => 'localhost',
-    'database' => 'todo',
-    'username' => 'root',
-    'password' => '',
-    'charset' => 'utf8',
-    'collation' => 'utf8_unicode_ci',
-    'prefix' => '',
-]);
-
+$capsule->addConnection(require $configPath . 'database.php');
 $capsule->setEventDispatcher(new Dispatcher(new Container));
 $capsule->setAsGlobal();
 $capsule->bootEloquent();
 
-$configPath = __DIR__ . '/config/';
 $config = new Repository(require $configPath . 'hashing.php');
-
-
 $container = new Container;
 Container::setInstance($container);
 $request = Request::capture();
@@ -54,6 +45,12 @@ $container->instance('config', $config);
 
 $hash = new HashManager($container);
 $container->instance('hash', $hash);
+
+
+$loader = new FileLoader(new Filesystem, 'lang');
+$translator = new Translator($loader, 'en');
+$validation = new Factory($translator, new Container);
+$container->instance('validation', $validation);
 
 $events = new Dispatcher($container);
 $router = new Router($events, $container);
