@@ -28,6 +28,9 @@ Container::setInstance($container);
 
 $container->instance('config', $config);
 
+$http = new \Illuminate\Http\Client\Factory();
+$container->instance('http', $http);
+
 
 $hash = new HashManager($container);
 $container->instance('hash', $hash);
