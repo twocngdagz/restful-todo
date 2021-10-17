@@ -1,0 +1,12 @@
+{
+    "name": "medericroybeldia/todo",
+    "description": "Restful ToDo API",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Mederic Roy Beldia",
+            "email": "twocngdagz@yahoo.com"
+        }
+    ],
+    "require": {}
+}
