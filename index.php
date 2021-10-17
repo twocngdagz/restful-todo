@@ -12,10 +12,13 @@
 
 require_once 'vendor/autoload.php';
 
+use App\Middleware\Authenticated;
+use App\Middleware\StartSession;
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager;
 use Illuminate\Events\Dispatcher;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Pipeline;
 use Illuminate\Routing\Router;
 
 
@@ -45,7 +48,27 @@ $container->instance('Illuminate\Http\Request', $request);
 $events = new Dispatcher($container);
 $router = new Router($events, $container);
 
+$globalMiddleware = [
+    StartSession::class,
+];
+
+$routeMiddleware = [
+    'auth' => Authenticated::class,
+];
+
+
+foreach ($routeMiddleware as $key => $middleware) {
+    $router->aliasMiddleware($key, $middleware);
+}
+
+
 require_once 'routes.php';
 
-$response = $router->dispatch($request);
+$response = (new Pipeline($container))
+    ->send($request)
+    ->through($globalMiddleware)
+    ->then(function ($request) use ($router) {
+        return $router->dispatch($request);
+    });
+
 $response->send();
