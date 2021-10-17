@@ -10,6 +10,10 @@ class Task extends Model
 
     public function scopeCurrentUser($query)
     {
-        return $query->whereUserId($_SESSION['user']->id);
+        if (isset($_SESSION['user'])) {
+            return $query->whereUserId($_SESSION['user']->id);
+        }
+
+        return $query;
     }
 }
