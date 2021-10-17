@@ -14,7 +14,11 @@ $router->get('bye', function () {
 });
 
 $router->group(['namespace' => 'App\Api\Controllers', 'prefix' => 'api'], function (Router $router) {
-    $router->get('/todo', ['name' => 'todo.index', 'uses' => 'ToDoController@index']);
+    $router->get('/todos', ['name' => 'todo.index', 'uses' => 'ToDoController@index']);
+    $router->get('/todos/{id}', ['name' => 'todo.show', 'uses' => 'ToDoController@show']);
+    $router->post('/todos', ['name' => 'todo.create', 'uses' => 'ToDoController@create']);
+    $router->patch('/todos/{todo}', ['name' => 'todo.update', 'uses' => 'ToDoController@update']);
+    $router->delete('/todos/{todo}', ['name' => 'todo.delete', 'uses' => 'ToDoController@destroy']);
 });
 
 
