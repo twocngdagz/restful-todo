@@ -37,8 +37,10 @@ class AuthController
         }
 
         $user = User::where('email', $request->email)->first();
-        Manager
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        $container = Container::getInstance();
+        $hash = $container->make('hash');
+
+        if (! $user || ! $hash->check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.'],
             ]);
