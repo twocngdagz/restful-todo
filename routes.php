@@ -15,6 +15,7 @@ $router->get('bye', function () {
 
 $router->group(['namespace' => 'App\Api\Controllers', 'prefix' => 'api'], function (Router $router) {
     $router->post('/login', ['name' => 'user.login', 'uses' => 'AuthController@login']);
+    $router->get('/users/todos/all', ['name' => 'todo.all', 'uses' => 'ToDoController@all']);
 });
 
 $router->group(['middleware' => 'auth'], function (Router $router) {

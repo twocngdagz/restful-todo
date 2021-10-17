@@ -1,0 +1,20 @@
+#!/usr/bin/env php
+<?php
+
+require __DIR__.'/vendor/autoload.php';
+
+use App\Commands\CreateUser;
+use Illuminate\Container\Container;
+use Illuminate\Events\Dispatcher;
+use Illuminate\Console\Application;
+
+$container = require_once __DIR__.'/bootstrap/app.php';
+$events = new Dispatcher($container);
+
+$artisan = new Application($container, $events, 'Version 1');
+$artisan->setName('My Console App Name');
+
+// Bind a command
+$artisan->resolve(CreateUser::class);
+
+$artisan->run();

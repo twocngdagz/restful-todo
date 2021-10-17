@@ -3,32 +3,31 @@
 namespace App\Api\Controllers;
 
 use App\Models\Task;
-use Illuminate\Container\Container;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Translation\FileLoader;
-use Illuminate\Translation\Translator;
-use Illuminate\Validation\Factory;
 
 class ToDoController
 {
-    public function index(Request $request)
+    public function all()
     {
         return Task::all();
+    }
+
+    public function index()
+    {
+        return Task::currentUser()->get();
     }
 
     public function show(int $id)
     {
         try {
-            return Task::findOrFail($id);
+            return Task::currentUser()->whereId($id)->get();
         } catch (\Throwable $e) {
-            return new Response([
+            return [
                 'errors' => [
                     'status' => 404,
                     'detail' => $e->getMessage()
                 ]
-            ]);
+            ];
         }
     }
 
@@ -52,21 +51,19 @@ class ToDoController
             return $validator->errors();
         }
 
-        $user = $_SESSION['user'];
-
         try {
-            Task::create([
+            return Task::create([
                 'description' => $request->input('description'),
                 'is_done' => $request->input('is_done'),
-                'user_id' => $user->id,
+                'user_id' => $_SESSION['user']->id,
             ]);
         } catch (\Throwable $e) {
-            return new Response([
+            return [
                 'errors' => [
                     'status' => 500,
                     'detail' => $e->getMessage()
                 ]
-            ]);
+            ];
         }
 
     }
@@ -98,12 +95,12 @@ class ToDoController
 
             return $task;
         } catch (\Throwable $e) {
-            return new Response([
+            return [
                 'errors' => [
                     'status' => 404,
                     'detail' => $e->getMessage()
                 ]
-            ]);
+            ];
         }
     }
 
@@ -111,14 +108,14 @@ class ToDoController
     {
         try {
             $task = Task::findOrFail($id);
-            $task->delete();
+            return $task->delete();
         } catch (\Throwable $e) {
-            return new Response([
+            return [
                 'errors' => [
                     'status' => 404,
                     'detail' => $e->getMessage()
                 ]
-            ]);
+            ];
         }
     }
 }
