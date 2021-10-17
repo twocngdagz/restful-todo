@@ -28,6 +28,9 @@ use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory;
 $configPath = __DIR__ . '/config/';
 
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
+$dotenv->safeLoad();
+
 $capsule = new Manager;
 
 $capsule->addConnection(require $configPath . 'database.php');
