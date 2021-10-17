@@ -37,9 +37,9 @@ class AuthController
         $user = User::where('email', $request->email)->first();
 
         if (! $user || ! $hash->check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
+            return [
                 'email' => ['The provided credentials are incorrect.'],
-            ]);
+            ];
         }
 
         $_SESSION['user'] = $user;
